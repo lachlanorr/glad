@@ -38,19 +38,19 @@ static int get_exts(void) {
         exts = (const char *)glGetString(GL_EXTENSIONS);
 #ifdef _GLAD_IS_SOME_NEW_VERSION
     } else {
-        int index;
+        unsigned int index;
 
         num_exts_i = 0;
         glGetIntegerv(GL_NUM_EXTENSIONS, &num_exts_i);
         if (num_exts_i > 0) {
-            exts_i = (const char **)realloc((void *)exts_i, num_exts_i * sizeof *exts_i);
+            exts_i = (const char **)realloc((void *)exts_i, (size_t)num_exts_i * (sizeof *exts_i));
         }
 
         if (exts_i == NULL) {
             return 0;
         }
 
-        for(index = 0; index < num_exts_i; index++) {
+        for(index = 0; index < (unsigned)num_exts_i; index++) {
             exts_i[index] = (const char*)glGetStringi(GL_EXTENSIONS, index);
         }
     }
@@ -60,7 +60,7 @@ static int get_exts(void) {
 
 static void free_exts(void) {
     if (exts_i != NULL) {
-        free((char **)exts_i);
+        free((void *)exts_i);
         exts_i = NULL;
     }
 }
@@ -125,6 +125,9 @@ _OPENGL_HEADER = '''
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX 1
 #endif
 #include <windows.h>
 #endif
